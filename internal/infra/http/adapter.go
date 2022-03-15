@@ -1,8 +1,12 @@
 package http
 
 import (
+	"Yaratam/internal/domain"
 	"context"
+	"errors"
+
 	"github.com/dgrijalva/jwt-go"
+	"github.com/go-chi/jwtauth"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
