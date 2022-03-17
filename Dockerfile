@@ -4,7 +4,7 @@ RUN useradd -u 10001 gopher
 
 RUN mkdir /goDev
 WORKDIR /goDev
-COPY go.mod go.sum ./
+COPY go.mod go.mod/go.sum ./
 
 RUN go mod download
 COPY . .
