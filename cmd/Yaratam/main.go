@@ -1,4 +1,4 @@
-package Yaratam
+package main
 
 import "fmt"
 
