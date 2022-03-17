@@ -9,7 +9,7 @@ COPY go.mod  ./
 RUN go mod download
 COPY . .
 
-RUN go build -o ./bin/goDev ./cmd/goDev
+RUN go build s -w -X goDev/internal/version.Version=1 -X goDev/internal/version.Commit=1 -o ./bin/goDev ./cmd/goDev
 
 FROM scratch
 
