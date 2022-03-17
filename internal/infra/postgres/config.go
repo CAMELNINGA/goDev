@@ -6,11 +6,11 @@ import (
 )
 
 type Config struct {
-	Host     string `long:"host" env:"HOST" description:"Postgres host" required:"yes"`
-	Port     int    `long:"port" env:"PORT" description:"Postgres port" required:"yes"`
-	User     string `long:"user" env:"USER" description:"Postgres user" required:"yes"`
-	Password string `long:"password" env:"PASSWORD" description:"Postgres password" required:"yes"`
-	Name     string `long:"name" env:"NAME" description:"Postgres name" required:"yes"`
+	Host     string `long:"host" env:"HOST" description:"Postgres host" `
+	Port     int    `long:"port" env:"PORT" description:"Postgres port" `
+	User     string `long:"user" env:"USER" description:"Postgres user" `
+	Password string `long:"password" env:"PASSWORD" description:"Postgres password" `
+	Name     string `long:"name" env:"NAME" description:"Postgres name" `
 
 	MaxOpenConns    int           `long:"max-open-conns" env:"MAX_OPEN_CONNS" default:"25" description:"maximum of open database connections"`
 	MaxIdleConns    int           `long:"max-idle-conns" env:"MAX_IDLE_CONNS" default:"10" description:"maximum of idle database connections"`
