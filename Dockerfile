@@ -9,7 +9,7 @@ COPY go.mod  ./
 RUN go mod download
 COPY . .
 
-RUN go build -w  -o ./bin/goDev ./cmd/goDev
+RUN go build ./cmd/Yaratam/
 
 FROM scratch
 
