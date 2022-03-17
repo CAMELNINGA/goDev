@@ -4,12 +4,12 @@ RUN useradd -u 10001 gopher
 
 RUN mkdir /goDev
 WORKDIR /goDev
-COPY go.mod ./
+COPY go.mod  ./
 
 RUN go mod download
 COPY . .
 
-RUN make build
+RUN go build -o ./bin/goDev ./cmd/goDev
 
 FROM scratch
 
