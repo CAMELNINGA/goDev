@@ -21,4 +21,4 @@ USER gopher
 COPY --from=build /goDev/migrations /migrations
 COPY --from=build /goDev/bin/goDev /goDev
 
-CMD ["./credit-history"]
+CMD ["./goDev"]
