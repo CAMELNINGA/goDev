@@ -6,6 +6,7 @@ import (
 	"Yaratam/internal/infra/http"
 	"Yaratam/internal/infra/postgres"
 	"Yaratam/pkg/logging"
+	"context"
 	"fmt"
 	"github.com/jessevdk/go-flags"
 	"os"
