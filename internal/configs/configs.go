@@ -2,12 +2,16 @@ package configs
 
 import (
 	"Yaratam/internal/infra/http"
+	"Yaratam/internal/infra/postgres"
+	"Yaratam/pkg/logging"
 	"github.com/jessevdk/go-flags"
 	"os"
 )
 
 type Config struct {
-	HTTP *http.Config `group:"HTTP args" namespace:"http" env-namespace:"YARATAM_HTTP"`
+	Logger   *logging.Config  `group:"Logger args" namespace:"logger" env-namespace:"YARATAM_LOGGER"`
+	Postgres *postgres.Config `group:"Postgres args" namespace:"postgres" env-namespace:"YARATAM_POSTGRES"`
+	HTTP     *http.Config     `group:"HTTP args" namespace:"http" env-namespace:"YARATAM_HTTP"`
 }
 
 func Parse() (*Config, error) {

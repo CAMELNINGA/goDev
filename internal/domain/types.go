@@ -1,8 +1,5 @@
 package domain
 
-import "context"
+type ContextKey string
 
-type Delivery interface {
-	ListenAndServe() error
-	Shutdown(ctx context.Context) error
-}
+const ContextUserID ContextKey = "ctx_user_id"

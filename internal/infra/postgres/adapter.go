@@ -58,3 +58,18 @@ func NewAdapter(logger logrus.FieldLogger, config *Config) (domain.Database, err
 
 	return a, nil
 }
+
+func (a *adapter) SaveAppLogs(userID int, header string, body string, status int) error {
+	if _, err := a.db.Exec(
+		`INSERT INTO app_log(user_id, start_dt, header, body, status)
+					   VALUES ($1, now(), $2, $3, $4)`,
+		userID,
+		header,
+		body,
+		status); err != nil {
+		a.logger.WithError(err).Error("Error while saving info in app_log!")
+		return domain.ErrInternalDatabase
+	}
+
+	return nil
+}
