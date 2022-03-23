@@ -3,6 +3,7 @@ module Yaratam
 go 1.17
 
 require (
+	github.com/T-M-A/chi-prometheus v0.0.0-20180509160047-46ac2b31aa30
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dlmiddlecote/sqlstats v1.0.2
 	github.com/go-chi/chi v1.5.4
@@ -15,7 +16,6 @@ require (
 )
 
 require (
-	github.com/T-M-A/chi-prometheus v0.0.0-20180509160047-46ac2b31aa30 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/goccy/go-json v0.3.5 // indirect
