@@ -20,7 +20,7 @@ func (a *adapter) newRouter() (http.Handler, error) {
 	r.Use(chiprometheus.NewMiddleware("goDev"))
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/test", func(r chi.Router) {
-			r.Get("/hello", a.wrap(a.sayHello))
+			r.Get("/hello", a.wrap(getHello))
 		})
 
 	})

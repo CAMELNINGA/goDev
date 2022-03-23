@@ -1,7 +1,6 @@
 package http
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -12,15 +11,10 @@ func (a *adapter) wrap(handler func(w http.ResponseWriter, r *http.Request) erro
 		}
 	}
 }
-func (a *adapter) sayHello(w http.ResponseWriter, r *http.Request) error {
-	for k, values := range r.Header {
-		fmt.Print(k, ": ")
-		for _, v := range values {
-			fmt.Print(v, ", ")
-		}
+func getHello(w http.ResponseWriter, _ *http.Request) error {
+	if _, err := w.Write([]byte("Hello!")); err != nil {
+		return jError(w, err)
 	}
-
 	w.WriteHeader(http.StatusOK)
-	_, err := w.Write([]byte("Hello!"))
-	return err
+	return nil
 }
