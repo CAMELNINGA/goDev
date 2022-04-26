@@ -73,3 +73,8 @@ func (a *adapter) SaveAppLogs(userID int, header string, body string, status int
 
 	return nil
 }
+
+/*
+func (a *adapter) SelectShemaMigration()(int ,error)  {
+	var
+}*/

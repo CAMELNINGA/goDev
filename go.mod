@@ -16,6 +16,7 @@ require (
 )
 
 require (
+	github.com/Syfaro/telegram-bot-api v4.6.4+incompatible // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/goccy/go-json v0.3.5 // indirect
@@ -33,6 +34,7 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
+	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	go.uber.org/atomic v1.6.0 // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect

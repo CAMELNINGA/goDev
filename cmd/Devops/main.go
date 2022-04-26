@@ -1,22 +1,23 @@
 package main
 
 import (
+	"Yaratam/internal/configs"
+	"Yaratam/internal/domain"
+	"Yaratam/internal/infra/http"
+	"Yaratam/internal/infra/postgres"
+	"Yaratam/pkg/logging"
+	"context"
 	"fmt"
-	"net/url"
-	"strings"
+	"github.com/jessevdk/go-flags"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 func main() {
-	lox := "https://minio-node-test.sovcombank.ru/credit-history/users/341/newHalva_70_2.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=XBNQZAP02C05O6EHQ9J6%2F20220425%2F%2Fs3%2Faws4_request&X-Amz-Date=20220425T134652Z&X-Amz-Expires=432000&X-Amz-SignedHeaders=host&X-Amz-Signature=4f0287eab903c9b9c9ab1ff31c9e4ec544f44418a2ed7fdb4ea7af7f4f9c48d9"
-	u, err := url.Parse(lox)
-	if err != nil {
-		panic(err)
-	}
 
-	//fmt.Println(u.Path)
-	path := strings.SplitAfter(u.Path, "/")
-	fmt.Println(path[len(path)-1])
-	/*config, err := configs.Parse()
+	config, err := configs.Parse()
 	if err != nil {
 		if err, ok := err.(*flags.Error); ok {
 			fmt.Println(err)
@@ -74,5 +75,5 @@ func main() {
 	time.Sleep(time.Second)
 
 	logger.Info("The application stopped.")
-	*/
+
 }
