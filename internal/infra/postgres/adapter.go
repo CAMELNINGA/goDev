@@ -2,10 +2,15 @@ package postgres
 
 import (
 	"Yaratam/internal/domain"
+	_ "database/sql"
 	"errors"
+	"time"
+
 	"github.com/dlmiddlecote/sqlstats"
 	"github.com/golang-migrate/migrate/v4"
-	postgres "github.com/golang-migrate/migrate/v4/database/postgres"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/jmoiron/sqlx"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
@@ -78,3 +83,12 @@ func (a *adapter) SaveAppLogs(userID int, header string, body string, status int
 func (a *adapter) SelectShemaMigration()(int ,error)  {
 	var
 }*/
+
+func (a *adapter) GetTime() (time.Time, error) {
+	var tim time.Time
+	err := a.db.Get(&tim, `SELECT now-nows FROM test_timne`)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return tim, nil
+}

@@ -46,7 +46,7 @@ func main() {
 	if err != nil {
 		logger.WithError(err).Fatal("Error creating new HTTP adapter!")
 	}
-
+	fmt.Println(service.GetTimes())
 	shutdown := make(chan error, 1)
 
 	go func(shutdown chan<- error) {

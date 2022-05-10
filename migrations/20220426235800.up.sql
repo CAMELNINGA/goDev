@@ -44,3 +44,4 @@ CREATE TABLE shops_type(
   dc_sh_type_id integer references ds_shops_type(id),
   shop_id integer references shops(id)
 )
+
