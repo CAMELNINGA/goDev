@@ -21,4 +21,5 @@ type LogRepository interface {
 
 type TelegramRepository interface {
 	GetTime() (time.Time, error)
+	GetUser(chatID int) (*User, error)
 }

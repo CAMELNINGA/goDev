@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"Yaratam/internal/domain"
+	"Yaratam/internal/infra/postgres/models"
+	"database/sql"
 	_ "database/sql"
 	"errors"
 	"time"
@@ -64,6 +66,17 @@ func NewAdapter(logger logrus.FieldLogger, config *Config) (domain.Database, err
 	return a, nil
 }
 
+func (a *adapter) wrapError(err error, ErrorInfo string) error {
+	switch err {
+	case sql.ErrNoRows:
+		return domain.ErrNotFound
+	default:
+		a.logger.WithError(err).Error(ErrorInfo)
+		return domain.ErrInternalDatabase
+
+	}
+}
+
 func (a *adapter) SaveAppLogs(userID int, header string, body string, status int) error {
 	if _, err := a.db.Exec(
 		`INSERT INTO app_log(user_id, start_dt, header, body, status)
@@ -91,4 +104,13 @@ func (a *adapter) GetTime() (time.Time, error) {
 		return time.Time{}, err
 	}
 	return tim, nil
+}
+
+func (a *adapter) GetUser(chatID int) (*domain.User, error) {
+	var user models.User
+	if err := a.db.Get(&user, `SELECT id, username, chat_id FROM users 
+                             WHERE chat_id=$1`, chatID); err != nil {
+		return &domain.User{}, a.wrapError(err, "Error while getting user")
+	}
+	return user.ToDomain(), nil
 }

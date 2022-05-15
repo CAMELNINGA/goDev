@@ -51,4 +51,6 @@ var (
 	ErrInternalOpenAPI = fmt.Errorf("internal openapi error")
 
 	ErrUnavailableBureauReport = fmt.Errorf("this bureau report is currenty unavailable")
+
+	ErrNotFound = fmt.Errorf("not found")
 )
