@@ -53,4 +53,5 @@ var (
 	ErrUnavailableBureauReport = fmt.Errorf("this bureau report is currenty unavailable")
 
 	ErrNotFound = fmt.Errorf("not found")
+	ErrNoOKAPI  = fmt.Errorf("got no ok status from api")
 )

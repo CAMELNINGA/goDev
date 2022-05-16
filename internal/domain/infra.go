@@ -2,12 +2,14 @@ package domain
 
 import (
 	"context"
+	"io"
 	"time"
 )
 
 type Delivery interface {
 	ListenAndServe() error
 	Shutdown(ctx context.Context) error
+	UploadMultipartFile(file io.ReadCloser, username string, unit string, fileName string) (string, error)
 }
 
 type Database interface {
