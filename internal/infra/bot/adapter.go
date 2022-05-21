@@ -97,9 +97,41 @@ func (a *adapter) StartBot() error {
 					msg.Text = domain.StartMsg
 					msg.ReplyMarkup = domain.StartKeyboard
 				} else {
-					msg.ReplyMarkup = domain.StartKeyboard
+					msg.ReplyMarkup = domain.MainKeyboard
 
 					msg.Text = domain.AlreadyRegistered
+				}
+			case domain.RegisterButton:
+				ply, err := a.service.GetUserData(int(update.Message.Chat.ID))
+				if err != nil || ply.UserName == "" {
+					user := domain.User{
+						UserName: update.Message.Chat.UserName,
+						ChatID:   int(update.Message.Chat.ID),
+					}
+					if err := a.service.AddUser(&user); err != nil {
+						msg.Text = "Анлаки чет не получилось зарегаться"
+						msg.ReplyMarkup = domain.StartKeyboard
+					} else {
+						msg.Text = domain.RegistrationSuccessful
+						msg.ReplyMarkup = domain.MainKeyboard
+					}
+
+				} else {
+					msg.Text = domain.RegistrationSuccessful
+					msg.ReplyMarkup = domain.MainKeyboard
+				}
+			case "groups":
+				{
+					ply, err := a.service.GetUserData(int(update.Message.Chat.ID))
+					if err != nil || ply.UserName == "" {
+						a.logger.Error("Get player data failed", zap.Error(err))
+						//continue
+						msg.Text = domain.StartMsg
+						msg.ReplyMarkup = domain.StartKeyboard
+					} else {
+						msg.ReplyMarkup = domain.StartKeyboard
+						msg.Text = domain.AlreadyRegistered
+					}
 				}
 			default:
 				if update.Message.Photo != nil || update.Message.Document != nil || update.Message.Video != nil {
@@ -115,9 +147,16 @@ func (a *adapter) StartBot() error {
 				}
 
 			}
+			_, err := a.bot.Send(msg)
+			if err != nil {
+				a.logger.Error("Send message failed", zap.Error(err))
+				continue
+			}
 		}
+		a.logger.Debug("got message", zap.Any("chatid", update.Message.Chat.ID), zap.String("from", update.Message.From.UserName), zap.String("message", update.Message.Text))
 
 	}
+	return nil
 }
 func (a *adapter) handleFile(update *tgbotapi.Update) (*tgbotapi.Message, error) {
 	mstext := ErrNoDataF

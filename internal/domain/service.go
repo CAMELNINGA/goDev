@@ -19,6 +19,7 @@ type LogService interface {
 type TelegramService interface {
 	GetTimes() (time.Time, error)
 	GetUserData(ID int) (*User, error)
+	AddUser(user *User) error
 }
 
 type service struct {
@@ -55,4 +56,8 @@ func (s *service) GetTimes() (time.Time, error) {
 
 func (s *service) GetUserData(ID int) (*User, error) {
 	return s.db.GetUser(ID)
+}
+
+func (s *service) AddUser(user *User) error {
+	return s.db.AddUser(user)
 }

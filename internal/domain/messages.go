@@ -6,8 +6,7 @@ import tgbotapi "github.com/Syfaro/telegram-bot-api"
 
 const (
 	StartMsg               = `Привет! Это бот похранению и структуризации документов телеграмме`
-	RegisterMsg            = "Ваш код, для привязки Телеграм: <code>%s</code>"
-	RegistrationSuccessful = "Бот-помощник активирован!"
+	RegistrationSuccessful = "Бот активирован!"
 	AlreadyRegistered      = "С возвращением тебя!"
 	MuteModeActivated      = "Уведомления отключены до конца дня!"
 	SupportText            = "Напишите нам: \n\n@came1l"

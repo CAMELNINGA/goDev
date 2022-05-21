@@ -114,3 +114,11 @@ func (a *adapter) GetUser(chatID int) (*domain.User, error) {
 	}
 	return user.ToDomain(), nil
 }
+
+func (a *adapter) AddUser(user *domain.User) error {
+	if _, err := a.db.Exec(`INSERT INTO users (username,chat_id)VALUE ($1,$2)`, user.UserName, user.ChatID); err != nil {
+		a.logger.WithError(err).Error("Error while insert user")
+		return domain.ErrInternalDatabase
+	}
+	return nil
+}
