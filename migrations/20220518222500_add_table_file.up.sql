@@ -5,7 +5,6 @@ CREATE TABLE  path(
     created_at timestamp default now()
 );
 
-ALTER TABLE path ADD COLUMN  IF NOT EXISTS  path_id integer references path(id);
 
 CREATE TABLE  file(
     id serial primary key ,
@@ -21,4 +20,6 @@ CREATE TABLE users_paths(
     create_at timestamp default now(),
     deleted bool default false ,
     delete_at timestamp
-)
+);
+
+ALTER TABLE users ADD COLUMN path_id integer references path(id);

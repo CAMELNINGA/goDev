@@ -2,9 +2,9 @@ package domain
 
 import (
 	"github.com/sirupsen/logrus"
+	"io"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 type Service interface {
@@ -17,20 +17,22 @@ type LogService interface {
 }
 
 type TelegramService interface {
-	GetTimes() (time.Time, error)
 	GetUserData(ID int) (*User, error)
 	AddUser(user *User) error
+	UploadMultipartFile(file io.ReadCloser, username string, unit string, fileName string) (string, error)
 }
 
 type service struct {
 	logger logrus.FieldLogger
 	db     Database
+	http   Httperf
 }
 
-func NewService(logger logrus.FieldLogger, db Database) Service {
+func NewService(logger logrus.FieldLogger, db Database, httpreq Httperf) Service {
 	s := &service{
 		logger: logger,
 		db:     db,
+		http:   httpreq,
 	}
 	return s
 }
@@ -50,14 +52,14 @@ func (s *service) SaveAppLogs(w http.ResponseWriter, r *http.Request, next http.
 	return s.db.SaveAppLogs(userID, header, method, statusSTR)
 }
 
-func (s *service) GetTimes() (time.Time, error) {
-	return s.db.GetTime()
-}
-
 func (s *service) GetUserData(ID int) (*User, error) {
 	return s.db.GetUser(ID)
 }
 
 func (s *service) AddUser(user *User) error {
 	return s.db.AddUser(user)
+}
+
+func (s *service) UploadMultipartFile(file io.ReadCloser, username string, unit string, fileName string) (string, error) {
+	return s.http.UploadMultipartFile(file, username, unit, fileName)
 }

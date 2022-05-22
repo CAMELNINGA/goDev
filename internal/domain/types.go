@@ -8,3 +8,12 @@ type User struct {
 	UserName string
 	ChatID   int
 }
+
+type Path struct {
+	ID          int
+	DisplayName string
+}
+
+type File struct {
+	Path string
+}

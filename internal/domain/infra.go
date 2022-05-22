@@ -3,7 +3,6 @@ package domain
 import (
 	"context"
 	"io"
-	"time"
 )
 
 type Delivery interface {
@@ -22,7 +21,16 @@ type LogRepository interface {
 }
 
 type TelegramRepository interface {
-	GetTime() (time.Time, error)
 	GetUser(chatID int) (*User, error)
 	AddUser(user *User) error
+	AddPath(chatID int, path *Path) (int, error)
+	ChangeUserPath(chatID, pathID int) error
+	AddFile(chatID int, path string) error
+	GetFiles(chatID int) ([]*File, error)
+	GetPaths(chatID int) ([]*Path, error)
+	DeletePaths(chatID int) error
+}
+
+type Httperf interface {
+	UploadMultipartFile(file io.ReadCloser, username string, unit string, fileName string) (string, error)
 }

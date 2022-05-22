@@ -1,9 +1,10 @@
-package http
+package main
 
 import (
 	"Yaratam/internal/domain"
 	"encoding/json"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"go.uber.org/zap"
 	"io"
 	"mime/multipart"
@@ -11,21 +12,19 @@ import (
 	"time"
 )
 
-func (a *adapter) wrap(handler func(w http.ResponseWriter, r *http.Request) error) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if err := handler(w, r); err != nil {
-			a.logger.WithFields(generateFields(r)).WithError(err).Error("Error handling request")
-		}
-	}
-}
-func getHello(w http.ResponseWriter, _ *http.Request) error {
-	if _, err := w.Write([]byte("Hello!")); err != nil {
-		return jError(w, err)
-	}
-	w.WriteHeader(http.StatusOK)
-	return nil
+type adapter struct {
+	config Config
+	logger *logrus.Logger
 }
 
+func NewAdapter(config Config, logger *logrus.Logger) (domain.Httperf, error) {
+	a := &adapter{
+		config: config,
+		logger: logger,
+	}
+
+	return a, nil
+}
 func (a *adapter) UploadMultipartFile(file io.ReadCloser, username string, unit string, fileName string) (string, error) {
 	var timeHTTPClient = &http.Client{Timeout: 30 * time.Second}
 	apiLink := a.config.UploadURL + "/upload"

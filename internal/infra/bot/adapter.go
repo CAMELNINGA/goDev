@@ -117,7 +117,7 @@ func (a *adapter) StartBot() error {
 					}
 
 				} else {
-					msg.Text = domain.RegistrationSuccessful
+					msg.Text = domain.AlreadyRegistered
 					msg.ReplyMarkup = domain.MainKeyboard
 				}
 			case "groups":
