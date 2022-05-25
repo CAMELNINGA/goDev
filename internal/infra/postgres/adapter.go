@@ -92,7 +92,7 @@ func (a *adapter) SaveAppLogs(userID int, header string, body string, status int
 
 func (a *adapter) GetUser(chatID int) (*domain.User, error) {
 	var user models.User
-	if err := a.db.Get(&user, `SELECT id, username, chat_id FROM users 
+	if err := a.db.Get(&user, `SELECT id, username, chat_id, coalesce(path_id,-1) FROM users 
                              WHERE chat_id=$1`, chatID); err != nil {
 		return &domain.User{}, a.wrapError(err, "Error while getting user")
 	}
@@ -130,6 +130,13 @@ func (a *adapter) ChangeUserPath(chatID, pathID int) error {
 }
 
 func (a *adapter) AddFile(chatID int, path string) error {
+	user, err := a.GetUser(chatID)
+	if err != nil {
+		return err
+	}
+	if user.PathID == -1 {
+		return domain.ErrInvalidInputData
+	}
 	if _, err := a.db.Exec(`INSERT INTO file ( user_id, path_id,paths) SELECT id, path_id, $2 from users where chat_id=$1 LIMIT 1`, chatID, path); err != nil {
 		a.logger.WithError(err).Error("Error while insert file")
 		return domain.ErrInternalDatabase

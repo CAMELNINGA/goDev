@@ -92,3 +92,6 @@ func (a *adapter) UploadMultipartFile(file io.ReadCloser, username string, unit 
 
 	return res.Link, nil
 }
+
+func (a adapter) GetFiles(path string) (file interface{}, err error) {
+}

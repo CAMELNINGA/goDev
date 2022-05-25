@@ -4,7 +4,7 @@ import (
 	"Yaratam/internal/domain"
 	"errors"
 	"fmt"
-	tgbotapi "github.com/Syfaro/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"go.uber.org/zap"
 	"net/http"
 	"net/url"
@@ -74,11 +74,8 @@ func (a *adapter) StartBot() error {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
-	upd, err := a.bot.GetUpdatesChan(u)
-	if err != nil {
-		a.logger.Error("Bot get updates channel failed", zap.Error(err))
-		return err
-	}
+	upd := a.bot.GetUpdatesChan(u)
+
 	for update := range upd {
 		if update.Message == nil {
 			continue
@@ -120,7 +117,7 @@ func (a *adapter) StartBot() error {
 					msg.Text = domain.AlreadyRegistered
 					msg.ReplyMarkup = domain.MainKeyboard
 				}
-			case "groups":
+			case domain.ChooseDirectoryButton:
 				{
 					ply, err := a.service.GetUserData(int(update.Message.Chat.ID))
 					if err != nil || ply.UserName == "" {
@@ -129,8 +126,20 @@ func (a *adapter) StartBot() error {
 						msg.Text = domain.StartMsg
 						msg.ReplyMarkup = domain.StartKeyboard
 					} else {
-						msg.ReplyMarkup = domain.StartKeyboard
-						msg.Text = domain.AlreadyRegistered
+						paths, err := a.service.GetPaths(int(update.Message.Chat.ID))
+						if err != nil {
+							a.logger.Error("Get player paths failed", zap.Error(err))
+							msg.ReplyMarkup = domain.MainKeyboard
+							msg.Text = "Не удалось выбрать папку"
+						} else {
+							msgPath := tgbotapi.NewReplyKeyboard()
+							for _, v := range paths {
+								msgPath.Keyboard = append(msgPath.Keyboard, tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(v.DisplayName)))
+							}
+							msg.ReplyMarkup = msgPath
+							msg.Text = "Выбери папку"
+						}
+
 					}
 				}
 			default:
@@ -142,6 +151,32 @@ func (a *adapter) StartBot() error {
 					}
 					continue
 					//msg.Text = "Файл успешно отправлен!"
+				} else if update.Message.Command() != "" {
+					paths, err := a.service.GetPaths(int(update.Message.Chat.ID))
+					if err != nil {
+						a.logger.Error("Get player paths failed", zap.Error(err))
+						msg.ReplyMarkup = domain.MainKeyboard
+						msg.Text = "Не удалось выбрать папку"
+					} else {
+						for i, v := range paths {
+							if v.DisplayName == update.Message.Command() {
+								if err := a.service.ChangeUserPath(int(update.Message.Chat.ID), v.ID); err != nil {
+									msg.ReplyMarkup = domain.MainKeyboard
+									msg.Text = "Не удалось выбрать папку"
+
+								}
+
+								tgbotapi.FileURL().SendData()
+								msg.ReplyMarkup = domain.FileKeyboard
+								msg.Text = domain.AddedFile
+								break
+							}
+							if i == len(paths)-1 {
+								msg.ReplyMarkup = domain.MainKeyboard
+								msg.Text = "Не удалось найти папку папку"
+							}
+						}
+					}
 				} else {
 					msg.Text = "Я не знаю такую команду, мне известны только [/start]"
 				}
@@ -159,26 +194,11 @@ func (a *adapter) StartBot() error {
 	return nil
 }
 func (a *adapter) handleFile(update *tgbotapi.Update) (*tgbotapi.Message, error) {
-	mstext := ErrNoDataF
-	typ := 0
 	ply, err := a.service.GetUserData(int(update.Message.Chat.ID))
-	if err != nil || ply.UserName == "" {
+	if err != nil || ply.UserName == "" || ply.PathID == -1 {
 		a.logger.Error("Get player data failed", zap.Error(err))
 		//continue
 	}
-
-	vv, ok := a.commandsCache[int(update.Message.Chat.ID)]
-	if !ok {
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, mstext)
-		sentMsg, err := a.bot.Send(msg)
-		if err != nil {
-			return nil, err
-		}
-
-		return &sentMsg, fmt.Errorf("no button selected")
-	}
-	// reset button after usage
-	defer delete(a.commandsCache, int(update.Message.Chat.ID))
 
 	rawURL := ""
 	if update.Message.Video != nil {
@@ -265,7 +285,6 @@ func (a *adapter) handleFile(update *tgbotapi.Update) (*tgbotapi.Message, error)
 
 		return &sentMsg, err
 	}
-	//defer resp.Body.Close()
 
 	filLink, err := a.service.UploadMultipartFile(resp.Body, ply.UserName, strconv.Itoa(ply.ChatID), fileName)
 	if err != nil {
@@ -277,8 +296,26 @@ func (a *adapter) handleFile(update *tgbotapi.Update) (*tgbotapi.Message, error)
 
 		return &sentMsg, err
 	}
+	if err := a.service.AddFile(int(update.Message.Chat.ID), filLink); err != nil {
+		if err == domain.ErrInvalidInputData {
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Ошибка загрузки файла, вы не вошли в папаку")
+			sentMsg, errr := a.bot.Send(msg)
+			if errr != nil {
+				return nil, errr
+			}
+			return &sentMsg, err
+		} else {
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Ошибка загрузки файла")
+			sentMsg, errr := a.bot.Send(msg)
+			if errr != nil {
+				return nil, errr
+			}
+			return &sentMsg, err
+		}
 
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Отлично! Файл будет проверен модератором, а пока держи свою награду: рубинов."))
+	}
+	defer resp.Body.Close()
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Файл сохранен."))
 	sentMsg, err := a.bot.Send(msg)
 	if err != nil {
 		return nil, err

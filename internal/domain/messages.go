@@ -17,9 +17,10 @@ const (
 	RegisterButton        = "🔑 Регистрация"
 	SupportButton         = "💬 Служба поддержки"
 	FortuneCookieButton   = "🎲 Предсказание"
-	SaveFilesButton       = "Сохранить файл"
+	AddedFile             = "Добавте Файл"
 	CreateDirectoryButton = "Создать папку"
 	ChooseDirectoryButton = "Ввойти в папку"
+	ExitDirectoryButton   = "Выйти в папку"
 	DeleteFileButton      = "Удаление файла"
 	ShareDirectory        = "Поделиться папкой"
 )
@@ -46,4 +47,8 @@ var MainKeyboard = tgbotapi.NewReplyKeyboard(
 	tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton(CreateDirectoryButton),
 		tgbotapi.NewKeyboardButton(ChooseDirectoryButton),
+	))
+var FileKeyboard = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton(ExitDirectoryButton),
 	))

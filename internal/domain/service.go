@@ -20,6 +20,9 @@ type TelegramService interface {
 	GetUserData(ID int) (*User, error)
 	AddUser(user *User) error
 	UploadMultipartFile(file io.ReadCloser, username string, unit string, fileName string) (string, error)
+	AddFile(chatID int, path string) error
+	GetPaths(chatID int) ([]*Path, error)
+	ChangeUserPath(chatID, pathID int) error
 }
 
 type service struct {
@@ -62,4 +65,16 @@ func (s *service) AddUser(user *User) error {
 
 func (s *service) UploadMultipartFile(file io.ReadCloser, username string, unit string, fileName string) (string, error) {
 	return s.http.UploadMultipartFile(file, username, unit, fileName)
+}
+
+func (s *service) AddFile(chatID int, path string) error {
+	return s.db.AddFile(chatID, path)
+}
+
+func (s *service) GetPaths(chatID int) ([]*Path, error) {
+	return s.db.GetPaths(chatID)
+}
+
+func (s *service) ChangeUserPath(chatID, pathID int) error {
+	return s.db.ChangeUserPath(chatID, pathID)
 }
