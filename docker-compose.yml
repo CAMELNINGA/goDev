@@ -1,0 +1,24 @@
+version: "3.3"
+services:
+  go-server:
+    container_name: go-telegram-bot
+    build: .
+    env_file:
+      - ./.env
+    expose:
+      - ${FILES_SERVER_PORT}
+    volumes:
+      - "$HOME/tmp:/var/root"
+
+  nginx:
+    build:
+      context: ./
+      dockerfile: nginx/Dockerfile
+    container_name: nginx
+    env_file:
+      - ./.env
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - "go-telegram-bot:file-server"

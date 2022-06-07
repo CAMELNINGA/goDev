@@ -50,5 +50,5 @@ var MainKeyboard = tgbotapi.NewReplyKeyboard(
 	))
 var FileKeyboard = tgbotapi.NewReplyKeyboard(
 	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton(ExitDirectoryButton),
+		tgbotapi.NewKeyboardButton(ChooseDirectoryButton),
 	))

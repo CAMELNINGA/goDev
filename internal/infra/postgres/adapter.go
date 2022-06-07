@@ -144,7 +144,7 @@ func (a *adapter) AddFile(chatID int, path string) error {
 	return nil
 }
 
-func (a *adapter) GetFiles(chatID int) ([]*domain.File, error) {
+func (a *adapter) GetFiles(chatID int64) ([]*domain.File, error) {
 	var file models.Files
 
 	if err := a.db.Select(&file, `SELECT paths FROM file WHERE path_id in (

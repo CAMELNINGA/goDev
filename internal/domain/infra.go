@@ -26,7 +26,7 @@ type TelegramRepository interface {
 	AddPath(chatID int, path *Path) (int, error)
 	ChangeUserPath(chatID, pathID int) error
 	AddFile(chatID int, path string) error
-	GetFiles(chatID int) ([]*File, error)
+	GetFiles(chatID int64) ([]*File, error)
 	GetPaths(chatID int) ([]*Path, error)
 	DeletePaths(chatID int) error
 }
