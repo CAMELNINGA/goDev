@@ -3,11 +3,12 @@ package bot
 import (
 	"Yaratam/internal/domain"
 	"errors"
+	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"go.uber.org/zap"
+	"github.com/sirupsen/logrus"
 )
 
-func StartNoProxy(c Config) (*tgbotapi.BotAPI, error) {
+func StartNoProxy(c *Config) (*tgbotapi.BotAPI, error) {
 	return tgbotapi.NewBotAPI(c.Token)
 }
 
@@ -32,19 +33,19 @@ type Adapter interface {
 }
 
 type adapter struct {
-	config  Config
+	config  *Config
 	service domain.Service
-	logger  *zap.Logger
+	logger  logrus.FieldLogger
 	bot     *tgbotapi.BotAPI
 
 	commandsCache map[int]string
 }
 
-func NewAdapter(config Config, service domain.Service, logger *zap.Logger) (Adapter, error) {
+func NewAdapter(config *Config, service domain.Service, logger logrus.FieldLogger) (Adapter, error) {
 	a := &adapter{
 		config:        config,
 		service:       service,
-		logger:        logger.Named("TelegramBotAdapter"),
+		logger:        logger,
 		commandsCache: make(map[int]string),
 	}
 
@@ -58,12 +59,12 @@ func (a *adapter) StartBot() error {
 	a.bot, err = StartNoProxy(a.config)
 
 	if err != nil {
-		a.logger.Error("Bot init failed", zap.Error(err))
+		a.logger.WithError(err).Error("Bot init failed")
 		return err
 	}
 	a.bot.Debug = a.config.Debug
 
-	a.logger.Info("Authorized on", zap.String("username", a.bot.Self.UserName))
+	a.logger.Info(fmt.Sprintf("Authorized on %s", a.bot.Self.UserName))
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
@@ -85,7 +86,7 @@ func (a *adapter) StartBot() error {
 			case "start":
 				ply, err := a.service.GetUserData(int(update.Message.Chat.ID))
 				if err != nil || ply.UserName == "" {
-					a.logger.Error("Get player data failed", zap.Error(err))
+					a.logger.WithError(err).Error("Get player data failed")
 					//continue
 					msg.Text = domain.StartMsg
 					msg.ReplyMarkup = domain.StartKeyboard
@@ -117,14 +118,15 @@ func (a *adapter) StartBot() error {
 				{
 					ply, err := a.service.GetUserData(int(update.Message.Chat.ID))
 					if err != nil || ply.UserName == "" {
-						a.logger.Error("Get player data failed", zap.Error(err))
+						a.logger.WithError(err).Error("Get player data failed")
 						//continue
 						msg.Text = domain.StartMsg
 						msg.ReplyMarkup = domain.StartKeyboard
 					} else {
 						paths, err := a.service.GetPaths(int(update.Message.Chat.ID))
 						if err != nil {
-							a.logger.Error("Get player paths failed", zap.Error(err))
+							a.logger.WithError(err).Error("Get player paths failed")
+
 							msg.ReplyMarkup = domain.MainKeyboard
 							msg.Text = "Не удалось выбрать папку"
 						} else {
@@ -163,7 +165,7 @@ func (a *adapter) StartBot() error {
 				} else if update.Message.Command() != "" {
 					paths, err := a.service.GetPaths(int(update.Message.Chat.ID))
 					if err != nil {
-						a.logger.Error("Get player paths failed", zap.Error(err))
+						a.logger.WithError(err).Error("Get player paths failed")
 						msg.ReplyMarkup = domain.MainKeyboard
 						msg.Text = "Не удалось выбрать папку"
 					} else {
@@ -200,11 +202,11 @@ func (a *adapter) StartBot() error {
 			}
 			_, err = a.bot.Send(msg)
 			if err != nil {
-				a.logger.Error("Send message failed", zap.Error(err))
+				a.logger.WithError(err).Error("Send message failed")
 				continue
 			}
 		}
-		a.logger.Debug("got message", zap.Any("chatid", update.Message.Chat.ID), zap.String("from", update.Message.From.UserName), zap.String("message", update.Message.Text))
+		a.logger.Debug(fmt.Sprintf("got message chatid: %d  from %s message: %s", update.Message.Chat.ID, update.Message.From.UserName, update.Message.Text))
 
 	}
 	return nil

@@ -1,4 +1,4 @@
-package main
+package httpreq
 
 import (
 	"Yaratam/internal/domain"
@@ -17,7 +17,7 @@ type adapter struct {
 	logger *logrus.Logger
 }
 
-func NewAdapter(config Config, logger *logrus.Logger) (domain.Httperf, error) {
+func NewAdapter(logger *logrus.Logger, config *Config) (domain.Httperf, error) {
 	a := &adapter{
 		config: config,
 		logger: logger,
@@ -91,7 +91,4 @@ func (a *adapter) UploadMultipartFile(file io.ReadCloser, username string, unit 
 	}
 
 	return res.Link, nil
-}
-
-func (a adapter) GetFiles(path string) (file interface{}, err error) {
 }
