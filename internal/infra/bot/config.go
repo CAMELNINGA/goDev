@@ -1,7 +1,7 @@
 package bot
 
 type Config struct {
-	Token             string `env:"TOKEN,required"`
+	Token             string `long:"token" env:"TOKEN"`
 	APIEndPoint       string `env:"API_ENDPOINT"`
 	RunMode           string `env:"RUN_WITH" envDefault:"direct"`
 	Debug             bool   `env:"DEBUG" envDefault:"true"`

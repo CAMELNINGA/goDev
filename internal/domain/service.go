@@ -24,6 +24,7 @@ type TelegramService interface {
 	GetPaths(chatID int) ([]*Path, error)
 	ChangeUserPath(chatID, pathID int) error
 	GetFiles(chatID int64) ([]*File, error)
+	AddPath(chatID int, path *Path) error
 }
 
 type service struct {
@@ -80,6 +81,11 @@ func (s *service) ChangeUserPath(chatID, pathID int) error {
 	return s.db.ChangeUserPath(chatID, pathID)
 }
 
-func (s service) GetFiles(chatID int64) ([]*File, error) {
+func (s *service) GetFiles(chatID int64) ([]*File, error) {
 	return s.db.GetFiles(chatID)
+}
+
+func (s *service) AddPath(chatID int, path *Path) error {
+	_, err := s.db.AddPath(chatID, path)
+	return err
 }

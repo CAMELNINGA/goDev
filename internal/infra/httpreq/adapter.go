@@ -17,7 +17,7 @@ type adapter struct {
 	logger *logrus.Logger
 }
 
-func NewAdapter(logger *logrus.Logger, config *Config) (domain.Httperf, error) {
+func NewAdapter(logger *logrus.Logger, config Config) (domain.Httperf, error) {
 	a := &adapter{
 		config: config,
 		logger: logger,

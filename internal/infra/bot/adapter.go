@@ -56,6 +56,7 @@ func (a *adapter) StartBot() error {
 	var (
 		err error
 	)
+	a.logger.Info(fmt.Printf(`token %s`, a.config.Token))
 	a.bot, err = StartNoProxy(a.config)
 
 	if err != nil {
@@ -80,8 +81,8 @@ func (a *adapter) StartBot() error {
 		if update.Message.Chat.Type != "private" {
 			continue
 		}
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
 		if update.Message.IsCommand() {
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
 			switch update.Message.Command() {
 			case "start":
 				ply, err := a.service.GetUserData(int(update.Message.Chat.ID))
@@ -95,9 +96,19 @@ func (a *adapter) StartBot() error {
 
 					msg.Text = domain.AlreadyRegistered
 				}
+			default:
+				msg.Text = "Я не знаю такую команду, мне известны только [/start]"
+
+			}
+		} else {
+
+			switch update.Message.Text {
 			case domain.RegisterButton:
+				fmt.Println(update.Message.Chat.UserName)
 				ply, err := a.service.GetUserData(int(update.Message.Chat.ID))
+				a.logger.Info(update.Message.Chat.UserName)
 				if err != nil || ply.UserName == "" {
+
 					user := domain.User{
 						UserName: update.Message.Chat.UserName,
 						ChatID:   int(update.Message.Chat.ID),
@@ -141,6 +152,7 @@ func (a *adapter) StartBot() error {
 					}
 				}
 			default:
+				fmt.Println(update.Message.Chat.UserName)
 				if update.Message.Document != nil {
 					_, err = a.bot.GetFileDirectURL(update.Message.Document.FileID)
 					if err != nil {
@@ -162,7 +174,7 @@ func (a *adapter) StartBot() error {
 					}
 					continue
 
-				} else if update.Message.Command() != "" {
+				} else if update.Message.Text != "" {
 					paths, err := a.service.GetPaths(int(update.Message.Chat.ID))
 					if err != nil {
 						a.logger.WithError(err).Error("Get player paths failed")
@@ -170,7 +182,7 @@ func (a *adapter) StartBot() error {
 						msg.Text = "Не удалось выбрать папку"
 					} else {
 						for i, v := range paths {
-							if v.DisplayName == update.Message.Command() {
+							if v.DisplayName == update.Message.Text {
 								if err = a.service.ChangeUserPath(int(update.Message.Chat.ID), v.ID); err != nil {
 									msg.ReplyMarkup = domain.MainKeyboard
 									msg.Text = "Не удалось выбрать папку"
@@ -181,7 +193,7 @@ func (a *adapter) StartBot() error {
 										msg.Text = "Не удалось загрузить файлы"
 									}
 									for _, v := range files {
-										tgbotapi.NewDocumentShare(int64(update.Message.Chat.ID), v.Path)
+										a.bot.Send(tgbotapi.NewDocumentShare(update.Message.Chat.ID, v.Path))
 									}
 
 									msg.ReplyMarkup = domain.MainKeyboard
@@ -190,25 +202,29 @@ func (a *adapter) StartBot() error {
 								}
 							}
 							if i == len(paths)-1 {
-								msg.ReplyMarkup = domain.MainKeyboard
-								msg.Text = "Не удалось найти папку папку"
-							}
-						}
-					}
-				} else {
-					msg.Text = "Я не знаю такую команду, мне известны только [/start]"
-				}
 
-			}
-			_, err = a.bot.Send(msg)
-			if err != nil {
-				a.logger.WithError(err).Error("Send message failed")
-				continue
+								path := domain.Path{ID: 0, DisplayName: update.Message.Text}
+								a.service.AddPath(int(update.Message.Chat.ID), &path)
+								msg.ReplyMarkup = domain.MainKeyboard
+								msg.Text = domain.AddedFile
+							}
+
+						}
+
+					}
+				}
 			}
 		}
+		_, err = a.bot.Send(msg)
+		if err != nil {
+			a.logger.WithError(err).Error("Send message failed")
+			continue
+		}
+
 		a.logger.Debug(fmt.Sprintf("got message chatid: %d  from %s message: %s", update.Message.Chat.ID, update.Message.From.UserName, update.Message.Text))
 
 	}
+
 	return nil
 }
 

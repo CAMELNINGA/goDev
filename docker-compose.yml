@@ -3,22 +3,22 @@ services:
   go-server:
     container_name: go-telegram-bot
     build: .
-    env_file:
-      - ./.env
-    expose:
-      - ${FILES_SERVER_PORT}
-    volumes:
-      - "$HOME/tmp:/var/root"
-
-  nginx:
-    build:
-      context: ./
-      dockerfile: nginx/Dockerfile
-    container_name: nginx
-    env_file:
-      - ./.env
     ports:
-      - "80:80"
-      - "443:443"
-    links:
-      - "go-telegram-bot:file-server"
+      - "8008:8008"
+    env_file:
+      - ./config/test.env
+    environment:
+      - YARATAM_POSTGRES_PASSWORD=selectel
+      - YRATAM_TG_BOT_TOKEN=5517986052:AAFkIz3iAYohxNVDu_ej9HZx1qTNt8aAU6A
+      - YARATAM_POSTGRES_PORT=5434
+  pg_db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=selectel
+      - POSTGRES_USER=selectel
+      - POSTGRES_DB=selectel
+    volumes:
+      - $HOME/docker/volumes/postgres:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"

@@ -32,7 +32,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+	logger.Info("Start works ))")
 	// Init PostgreSQL
 	db, err := postgres.NewAdapter(logger, config.Postgres)
 	if err != nil {
@@ -40,9 +40,9 @@ func main() {
 	}
 
 	//Init HTTP req
-	httpreq, err := httpreq.NewAdapter(logger, config.HTTPReq)
+	httpreq, err := httpreq.NewAdapter(logger, *config.HTTPReq)
 	if err != nil {
-		logger.WithError(err).Fatal("Error while creating a new httpreq adapter!")
+		logger.WithError(err).Error("Error while creating a new httpreq adapter!")
 	}
 	// Init service
 	service := domain.NewService(logger, db, httpreq)

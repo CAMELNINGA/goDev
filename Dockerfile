@@ -15,6 +15,4 @@ FROM scratch
 COPY --from=build /goDev/migrations /migrations
 COPY --from=build /goDev/bin/goDev /goDev
 
-EXPOSE $PORT
-
 CMD ["./goDev"]

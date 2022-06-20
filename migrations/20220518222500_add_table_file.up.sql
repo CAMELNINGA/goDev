@@ -1,4 +1,4 @@
-CREATE TABLE  path(
+CREATE TABLE IF NOT EXISTS path(
     id serial primary key,
     display_name text,
     deleted bool default false ,
