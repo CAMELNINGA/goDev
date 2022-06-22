@@ -15,7 +15,7 @@ type Config struct {
 	Postgres *postgres.Config `group:"Postgres args" namespace:"postgres" env-namespace:"YARATAM_POSTGRES"`
 	HTTP     *http.Config     `group:"HTTP args" namespace:"http" env-namespace:"YARATAM_HTTP"`
 	HTTPReq  *httpreq.Config  `group:"HTTP args" namespace:"httpreq" env-namespace:"YARATAM_HTTPREQ"`
-	Telegram *bot.Config      `group:" Telegram args" namespace:"tgbot" env-namespace:"YRATAM_TG_BOT"`
+	Telegram *bot.Config      `group:" Telegram args" namespace:"tgbot" env-namespace:"YARATAM_TG_BOT"`
 }
 
 func Parse() (*Config, error) {

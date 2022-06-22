@@ -1,17 +1,7 @@
 version: "3.3"
 services:
-  go-server:
-    container_name: go-telegram-bot
-    build: .
-    ports:
-      - "8008:8008"
-    env_file:
-      - ./config/test.env
-    environment:
-      - YARATAM_POSTGRES_PASSWORD=selectel
-      - YRATAM_TG_BOT_TOKEN=5517986052:AAFkIz3iAYohxNVDu_ej9HZx1qTNt8aAU6A
-      - YARATAM_POSTGRES_PORT=5434
-  pg_db:
+  telegram-bot-bd:
+    container_name: telegram-bot-bd
     image: postgres
     restart: always
     environment:
@@ -22,3 +12,16 @@ services:
       - $HOME/docker/volumes/postgres:/var/lib/postgresql/data
     ports:
       - "5434:5432"
+  go-server:
+    container_name: go-telegram-bot
+    build: .
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./config/test.env
+    environment:
+      - YARATAM_POSTGRES_PASSWORD=selectel
+      - YARATAM_TG_BOT_TOKEN=5517986052:AAH9JGvWfS6erD6NFo4zHnn5ipO9V6I4hYE
+      - YARATAM_POSTGRES_PORT=5432
+    links:
+      - "telegram-bot-bd:pg_db"

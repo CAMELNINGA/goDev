@@ -16,7 +16,6 @@ import (
 )
 
 func main() {
-
 	config, err := configs.Parse()
 	if err != nil {
 		if err, ok := err.(*flags.Error); ok {
@@ -33,6 +32,7 @@ func main() {
 		panic(err)
 	}
 	logger.Info("Start works ))")
+	fmt.Println(config.Telegram.Token)
 	// Init PostgreSQL
 	db, err := postgres.NewAdapter(logger, config.Postgres)
 	if err != nil {
