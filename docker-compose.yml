@@ -27,4 +27,7 @@ services:
       - YARATAM_POSTGRES_PORT=5432
     links:
       - "telegram-bot-bd:pg_db"
-     
+    logging:
+      driver: loki
+      options:
+        loki-url: https://${GRAFANA_USER}:${GRAFANA_PASSWORD}@logs-prod3.grafana.net/loki/api/v1/push 
