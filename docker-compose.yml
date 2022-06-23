@@ -10,6 +10,10 @@ services:
       - POSTGRES_DB=selectel
     ports:
       - "5434:5432"
+    logging:
+      driver: loki
+      options:
+        loki-url: https://${GRAFANA_USER}:${GRAFANA_PASSWORD}@logs-prod3.grafana.net/loki/api/v1/push
   go-server:
     container_name: go-telegram-bot
     build: .
@@ -23,3 +27,4 @@ services:
       - YARATAM_POSTGRES_PORT=5432
     links:
       - "telegram-bot-bd:pg_db"
+     
