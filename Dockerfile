@@ -8,7 +8,7 @@ COPY go.mod ./
 RUN go mod download
 COPY . .
 
-RUN export CGO_ENABLED=0 && go build -ldflags="-X 'app/build.User=$(id -u -n)' -X 'app/build.Time=$(date)'" -o ./bin/goDev ./cmd/Devops
+RUN export CGO_ENABLED=0 && go build  -o ./bin/goDev ./cmd/Devops
 
 FROM scratch
 
