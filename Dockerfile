@@ -9,7 +9,7 @@ RUN go mod download
 RUN go mod tidy
 COPY . .
 
-RUN CGO_ENABLED=0 go build -o ./bin/goDev ./cmd/Yaratam
+RUN CGO_ENABLED=0 go build -o ./bin/goDev ./cmd/Devops
 
 FROM scratch
 
