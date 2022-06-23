@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: tg-bot
+
   steps:
     - uses: actions/checkout@v3
     - name: deploy
