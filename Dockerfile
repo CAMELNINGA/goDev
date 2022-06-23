@@ -5,7 +5,8 @@ RUN mkdir /goDev
 WORKDIR /goDev
 COPY go.mod   ./
 
-RUN go mod download && go mod tidy
+RUN go mod download
+RUN go mod tidy
 COPY . .
 
 RUN CGO_ENABLED=0 go build -o ./bin/goDev ./cmd/Yaratam
