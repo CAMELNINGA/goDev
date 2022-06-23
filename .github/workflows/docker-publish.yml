@@ -141,7 +141,6 @@ jobs:
             
           Repository: ${{ github.repository }}
   on-fail:
-    needs: build
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     steps:
