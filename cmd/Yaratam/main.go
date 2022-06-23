@@ -1,8 +1,22 @@
 package main
 
-func main() {
+import (
+	"Yaratam/internal/configs"
+	"Yaratam/internal/domain"
+	"Yaratam/internal/infra/bot"
+	"Yaratam/internal/infra/httpreq"
+	"Yaratam/internal/infra/postgres"
+	"Yaratam/pkg/logging"
+	"fmt"
+	"github.com/jessevdk/go-flags"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+)
 
-	/*config, err := configs.Parse()
+func main() {
+	config, err := configs.Parse()
 	if err != nil {
 		if err, ok := err.(*flags.Error); ok {
 			fmt.Println(err)
@@ -17,26 +31,34 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+	logger.Info("Start works ))")
+	fmt.Println(config.Telegram.Token)
 	// Init PostgreSQL
 	db, err := postgres.NewAdapter(logger, config.Postgres)
 	if err != nil {
 		logger.WithError(err).Fatal("Error while creating a new database adapter!")
 	}
-	// Init service
-	service := domain.NewService(logger, db)
 
-	// Init HTTP adapter
-	httpAdapter, err := http.NewAdapter(logger, config.HTTP, service)
+	//Init HTTP req
+	httpreq, err := httpreq.NewAdapter(logger, *config.HTTPReq)
 	if err != nil {
-		logger.WithError(err).Fatal("Error creating new HTTP adapter!")
+		logger.WithError(err).Error("Error while creating a new httpreq adapter!")
+	}
+	// Init service
+	service := domain.NewService(logger, db, httpreq)
+
+	//Init Telegram
+	telegramBotAdapter, err := bot.NewAdapter(config.Telegram, service, logger)
+	if err != nil {
+		logger.WithError(err).Fatal("Error creating new Telegram adapter!")
 	}
 
-	shutdown := make(chan error, 1)
+	stop := make(chan error, 1)
 
-	go func(shutdown chan<- error) {
-		shutdown <- httpAdapter.ListenAndServe()
-	}(shutdown)
+	// Receive errors form start bot func into error channel
+	go func(stop chan<- error) {
+		stop <- telegramBotAdapter.StartBot()
+	}(stop)
 
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
@@ -44,21 +66,15 @@ func main() {
 	select {
 	case s := <-sig:
 		logger.WithField("signal", s).Info("Got the signal!")
-	case err := <-shutdown:
+	case err := <-stop:
 		logger.WithError(err).Error("Error running the application!")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
 	logger.Info("Stopping application...")
-
-	if err := httpAdapter.Shutdown(ctx); err != nil {
-		logger.WithError(err).Error("Error shutting down the HTTP server!")
-	}
+	telegramBotAdapter.StopBot()
 
 	time.Sleep(time.Second)
 
-	logger.Info("The application stopped.")*/
+	logger.Info("The application stopped.")
 
 }
