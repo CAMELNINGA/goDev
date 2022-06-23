@@ -1,4 +1,4 @@
-FROM golang:1.17 AS build
+FROM golang:1.15 AS build
 
 
 RUN mkdir /goDev
@@ -8,7 +8,7 @@ COPY go.mod  ./
 RUN go mod download
 COPY . .
 
-RUN go build -o ./bin/goDev ./cmd/Yaratam
+RUN CGO_ENABLED=0 go build -o ./bin/goDev ./cmd/Yaratam
 
 FROM scratch
 
