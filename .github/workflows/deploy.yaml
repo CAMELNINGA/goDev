@@ -19,5 +19,4 @@ jobs:
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           YARATAM_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           YARATAM_TG_BOT_TOKEN: ${{ secrets.YARATAM_TG_BOT_TOKEN }}
-        run: |
-          docker-compose -f compose/docker-compose.prod.yaml up
+        run: docker-compose -f compose/docker-compose.prod.yaml up
