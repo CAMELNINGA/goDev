@@ -1,0 +1,24 @@
+version: "3.3"
+services:
+  telegram-bot-bd:
+    container_name: telegram-bot-bd
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD:
+      - POSTGRES_USER:
+      - POSTGRES_DB:
+    ports:
+      - "5434:5432"
+  go-telegram-bot:
+    container_name: go-telegram-bot
+    image: ghcr.io/camelninga/godev:master
+    ports:
+      - "8080:8080"
+    env_file:
+      - .././config/test.env
+    environment:
+      - YARATAM_POSTGRES_PASSWORD:
+      - YARATAM_TG_BOT_TOKEN:
+    links:
+      - "telegram-bot-bd:pg_db"

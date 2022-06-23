@@ -1,0 +1,12 @@
+---
+- name: Install GitHub Actions Runner
+  hosts: all
+  user: ansible
+  become: yes
+  vars_files:
+    - vars/default.yaml
+  vars:
+    - github_account: "{{ github_account }}"
+    - github_repo: "{{ github_repo }}"
+  roles:
+    - role: monolithprojects.github_actions_runner

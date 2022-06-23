@@ -1,9 +1,10 @@
 ---
 - name: Install program on servers
   hosts: webservers
-  remote_user: root
-vars_files:
-  - vars/default.yaml
+  remote_user: camelninga
+  become: yes
+  vars_files:
+    - vars/default.yaml
 
   tasks:
     - name: Install aptitude using apt
@@ -40,13 +41,3 @@ vars_files:
         url: "{{ docker_compose_url }}"
         dest: /usr/local/bin/docker-compose
         mode: u+x,g+x,o+x
-
-- name: Install GitHub Actions Runner
-  hosts: all
-  user: ansible
-  become: yes
-  vars:
-    - github_account: "{{ github_account }}"
-    - github_repo: "{{ github_repo }}"
-  roles:
-    - role: monolithprojects.github_actions_runner
