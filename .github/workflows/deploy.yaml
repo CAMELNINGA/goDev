@@ -7,7 +7,7 @@ on:
       - completed
 
 jobs:
-  build:
+  deployment:
     runs-on: self-hosted
 
     steps:
