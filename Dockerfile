@@ -8,7 +8,7 @@ COPY go.mod ./
 RUN go mod download
 COPY . .
 
-RUN export CGO_ENABLED=0 && go build -o ./bin/goDev ./cmd/Devops
+RUN go build -o ./bin/goDev ./cmd/Devops
 
 FROM scratch
 
