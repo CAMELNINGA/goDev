@@ -3,9 +3,9 @@ FROM golang:1.17 AS build
 
 RUN mkdir /goDev
 WORKDIR /goDev
-COPY go.mod  ./
+COPY go.mod   ./
 
-RUN go mod download
+RUN go mod download && go mod tidy
 COPY . .
 
 RUN CGO_ENABLED=0 go build -o ./bin/goDev ./cmd/Yaratam
