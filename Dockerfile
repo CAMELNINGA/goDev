@@ -1,7 +1,7 @@
 FROM golang:1.17 AS build
 
 
-COPY go.mod go.sum   /goDev
+COPY go.mod go.sum  /goDev/
 WORKDIR /goDev
 
 RUN go mod download
